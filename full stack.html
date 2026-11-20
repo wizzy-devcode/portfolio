@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emmanuel "Wizzy" Danlami — Full Stack Developer</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Newsreader & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            bgDark: '#090a0d',
+            cardDark: '#111318',
+            cardDarkHover: '#161920',
+            borderDark: '#1f232d',
+            bgLight: '#f6f5f2',
+            cardLight: '#ffffff',
+            borderLight: '#e5e3dc',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Bento Card Architecture */
+    .bento-card {
+      background-color: #111318;
+      border: 1px solid #1f232d;
+      border-radius: 1.5rem;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .bento-card:hover {
+      border-color: #323949;
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px -15px rgba(0, 0, 0, 0.45);
+    }
+
+    html:not(.dark) .bento-card {
+      background-color: #ffffff;
+      border: 1px solid #e5e3dc;
+      box-shadow: 0 4px 20px -6px rgba(15, 23, 42, 0.05);
+    }
+    html:not(.dark) .bento-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 16px 35px -12px rgba(15, 23, 42, 0.09);
+    }
+
+    /* Portrait Image Framing */
+    .portrait-crop {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .group:hover .portrait-crop {
+      transform: scale(1.03);
+    }
+
+    /* Slide-Over Drawer Animation */
+    .drawer-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer-panel {
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer-backdrop.open .drawer-panel {
+      transform: translateX(0);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-bgLight text-zinc-900 dark:bg-bgDark dark:text-zinc-100 antialiased selection:bg-sky-500/20 selection:text-sky-400">
+
+  <!-- FLOATING GLASS PILL NAVIGATION BAR -->
+  <div class="fixed top-4 inset-x-0 z-40 px-4 flex justify-center pointer-events-none">
+    <nav class="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 py-2 rounded-full bg-white/80 dark:bg-[#111318]/85 backdrop-blur-xl border border-borderLight dark:border-borderDark shadow-lg shadow-black/5 dark:shadow-black/40">
+      <!-- Brand Monogram -->
+      <a href="#" class="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+        <span class="w-6 h-6 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-mono text-[11px] font-bold flex items-center justify-center">
+          ED
+        </span>
+        <span class="font-mono text-xs font-semibold tracking-tight hidden sm:inline">wizzy.dev</span>
+      </a>
+
+      <div class="h-4 w-px bg-borderLight dark:bg-borderDark"></div>
+
+      <!-- Anchor Links -->
+      <div class="flex items-center gap-0.5 sm:gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <a href="#work" class="px-3 py-1.5 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Work</a>
+        <a href="#stack" class="px-3 py-1.5 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Stack</a>
+        <a href="#experience" class="px-3 py-1.5 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors hidden sm:inline-block">Journey</a>
+        <a href="#contact" class="px-3 py-1.5 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Contact</a>
+      </div>
+
+      <div class="h-4 w-px bg-borderLight dark:bg-borderDark"></div>
+
+      <!-- Command Palette Trigger (Cmd/Ctrl + K) -->
+      <button id="cmd-trigger-btn" type="button" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono bg-zinc-100 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors" title="Quick Actions (⌘K)">
+        <i class="fa-solid fa-terminal text-[10px] text-sky-500"></i>
+        <span class="hidden md:inline">Menu</span>
+        <kbd class="text-[10px] px-1.5 py-0.5 rounded bg-white dark:bg-zinc-900 border border-borderLight dark:border-borderDark text-zinc-500">⌘K</kbd>
+      </button>
+
+      <!-- Light/Dark Theme Switcher -->
+      <button id="theme-toggle" type="button" aria-label="Toggle Theme" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300 transition-colors">
+        <i id="theme-icon" class="fa-solid fa-sun text-xs text-amber-400"></i>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN BENTO GRID CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 space-y-16">
+
+    <!-- SECTION 1: ASYMMETRIC HERO BENTO GRID -->
+    <section aria-label="Introduction" class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
+      
+      <!-- Tile A: Primary Editorial Statement (7 cols) -->
+      <div class="md:col-span-7 bento-card p-7 sm:p-9 flex flex-col justify-between space-y-8">
+        <div class="space-y-5">
+          <div class="flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+            <span class="px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300">Full Stack Engineer</span>
+            <span>•</span>
+            <span>Kaduna, Nigeria</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.12]">
+            Emmanuel <span class="font-serif italic font-normal text-sky-600 dark:text-sky-400">"Wizzy"</span> Danlami
+          </h1>
+
+          <p id="hero-bio" class="text-zinc-600 dark:text-zinc-400 text-base sm:text-[17px] leading-relaxed max-w-xl">
+            I design and engineer end-to-end web applications—pairing crisp React & TypeScript interfaces with resilient Node.js, Python, and PostgreSQL architectures built for real-world speed.
+          </p>
+        </div>
+
+        <!-- Primary Action Row -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a href="#work" class="px-5 py-3 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-sm hover:opacity-90 transition-opacity inline-flex items-center gap-2">
+            <span>Explore Selected Work</span>
+            <i class="fa-solid fa-arrow-down text-xs"></i>
+          </a>
+
+          <button id="hero-copy-email" type="button" class="px-4 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-mono text-xs inline-flex items-center gap-2 transition-colors">
+            <i class="fa-regular fa-copy text-sky-500"></i>
+            <span id="hero-copy-label">emmanueldanlami7b@gmail.com</span>
+          </button>
+
+          <a id="hero-whatsapp-link" href="https://wa.me/2348169335893" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center transition-colors" title="Chat on WhatsApp">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tile B: Portrait Card with Built-In Photo Upload/URL Slot (5 cols, spans 2 rows on desktop) -->
+      <div class="md:col-span-5 md:row-span-2 bento-card overflow-hidden relative group min-h-[390px] flex flex-col justify-end">
+        <!-- ===================================================================== -->
+        <!-- 📸 ADD YOUR PHOTO HERE (Option 1):                                    -->
+        <!-- Replace 'your-photo.jpg' below with your image path or URL, OR update  -->
+        <!-- PORTFOLIO_CONFIG.profileImage in the <script> section at the bottom.  -->
+        <!-- ===================================================================== -->
+        <img
+          id="wizzy.jpg"
+          src="wizzy.jpg"
+          onerror="this.onerror=null; this.src='https://placehold.co/700x850/111318/38bdf8?text=Emmanuel+Danlami';"
+          alt="Emmanuel Wizzy Danlami Portrait"
+          class="absolute inset-0 portrait-crop"
+        />
+
+        <!-- Hidden Local File Input for Instant Photo Preview -->
+        <input type="file" id="photo-file-input" accept="image/*" class="hidden" />
+
+        <!-- Subtle Gradient Vignette -->
+        <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none"></div>
+
+        <!-- Bottom Overlay Bar -->
+        <div class="relative z-10 p-4 m-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-white truncate">Emmanuel Danlami</div>
+            <div class="text-[11px] font-mono text-zinc-300 truncate">@wizbrown_gram</div>
+          </div>
+          <button id="swap-photo-btn" type="button" class="shrink-0 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-mono text-[11px] transition-colors inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-[10px] text-sky-400"></i>
+            <span>Update Photo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tile C: Live Location & WAT Clock Tile (4 cols) -->
+      <div class="md:col-span-4 bento-card p-6 flex flex-col justify-between space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono uppercase tracking-wider text-zinc-500">Base & Timezone</span>
+          <span class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-location-dot"></i>
+          </span>
+        </div>
+        <div>
+          <div id="wat-clock" class="text-2xl font-mono font-bold tracking-tight">18:30 WAT</div>
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Kaduna, Nigeria (UTC+1)</div>
+        </div>
+      </div>
+
+      <!-- Tile D: Social Connectivity Tile (3 cols) -->
+      <div class="md:col-span-3 bento-card p-6 flex flex-col justify-between space-y-4">
+        <span class="text-xs font-mono uppercase tracking-wider text-zinc-500">Connect</span>
+        <div id="hero-socials" class="grid grid-cols-2 gap-2">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SECTION 2: SELECTED WORK (FILTERABLE BENTO CARDS + SLIDE-OVER DRAWER) -->
+    <section id="work" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-sky-600 dark:text-sky-400">01 / Selected Work</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mt-1">Engineered Systems & Portals</h2>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div id="project-filters" class="inline-flex p-1 rounded-xl bg-zinc-200/70 dark:bg-cardDark border border-borderLight dark:border-borderDark self-start">
+          <button type="button" data-filter="all" class="filter-pill active px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 transition-all">All</button>
+          <button type="button" data-filter="Full Stack" class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">Full Stack</button>
+          <button type="button" data-filter="Frontend" class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">Frontend</button>
+        </div>
+      </div>
+
+      <!-- Projects Grid -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Populated via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION 3: TECHNICAL STACK BENTO MATRIX -->
+    <section id="stack" class="space-y-6">
+      <div>
+        <span class="font-mono text-xs uppercase tracking-widest text-sky-600 dark:text-sky-400">02 / Technical Stack</span>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mt-1">Core Tools & Disciplines</h2>
+      </div>
+
+      <div id="stack-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Populated via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION 4: EXPERIENCE & CAREER TIMELINE -->
+    <section id="experience" class="space-y-6">
+      <div>
+        <span class="font-mono text-xs uppercase tracking-widest text-sky-600 dark:text-sky-400">03 / Experience</span>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mt-1">Career Timeline</h2>
+      </div>
+
+      <div id="experience-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Populated via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION 5: DIRECT CONTACT & MESSAGE BENTO -->
+    <section id="contact" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <!-- Left Contact Info Card (5 cols) -->
+      <div class="lg:col-span-5 bento-card p-7 sm:p-8 flex flex-col justify-between space-y-8">
+        <div class="space-y-3">
+          <span class="font-mono text-xs uppercase tracking-widest text-sky-600 dark:text-sky-400">04 / Contact</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Let's build something reliable.</h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Reach out directly via email, phone, or WhatsApp—or send a project brief using the form.
+          </p>
+        </div>
+
+        <div class="space-y-3 font-mono text-xs">
+          <div class="p-3.5 rounded-xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark flex items-center justify-between gap-2">
+            <a href="mailto:emmanueldanlami7b@gmail.com" class="truncate hover:text-sky-500 transition-colors">
+              <i class="fa-regular fa-envelope text-sky-500 mr-2"></i>emmanueldanlami7b@gmail.com
+            </a>
+            <button id="contact-copy-email" type="button" class="shrink-0 px-2.5 py-1 rounded-lg bg-white dark:bg-cardDark border border-borderLight dark:border-borderDark hover:border-sky-500 transition-colors">
+              Copy
+            </button>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark flex items-center justify-between gap-2">
+            <a href="tel:+2348169335893" class="hover:text-sky-500 transition-colors">
+              <i class="fa-solid fa-phone text-emerald-500 mr-2"></i>+234 816 933 5893
+            </a>
+            <a href="https://wa.me/2348169335893" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors">
+              WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Message Form Card (7 cols) -->
+      <div class="lg:col-span-7 bento-card p-7 sm:p-8">
+        <form id="contact-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="sender-name" class="block font-mono text-xs text-zinc-500">Your Name</label>
+              <input id="sender-name" type="text" required placeholder="Jane Doe" class="w-full px-4 py-3 rounded-xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark focus:border-sky-500 focus:outline-none text-sm transition-colors" />
+            </div>
+            <div class="space-y-1.5">
+              <label for="sender-email" class="block font-mono text-xs text-zinc-500">Email Address</label>
+              <input id="sender-email" type="email" required placeholder="jane@company.com" class="w-full px-4 py-3 rounded-xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark focus:border-sky-500 focus:outline-none text-sm transition-colors" />
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="sender-message" class="block font-mono text-xs text-zinc-500">Project Details</label>
+            <textarea id="sender-message" rows="4" required placeholder="Tell me about what you're building, timeline, or goals..." class="w-full px-4 py-3 rounded-xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark focus:border-sky-500 focus:outline-none text-sm transition-colors resize-none"></textarea>
+          </div>
+
+          <button type="submit" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-sm hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2">
+            <span>Send Message</span>
+            <i class="fa-regular fa-paper-plane text-xs"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MINIMAL FOOTER -->
+  <footer class="border-t border-borderLight dark:border-borderDark py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500">
+      <div>&copy; <span id="footer-year">2026</span> Emmanuel "Wizzy" Danlami • Kaduna, Nigeria</div>
+      <div id="footer-socials" class="flex items-center gap-5 text-sm">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </footer>
+
+  <!-- SLIDE-OVER PROJECT CASE STUDY DRAWER -->
+  <div id="case-study-drawer" class="drawer-backdrop fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+    <div class="drawer-panel w-full max-w-xl h-full bg-white dark:bg-[#111318] border-l border-borderLight dark:border-borderDark p-6 sm:p-8 overflow-y-auto flex flex-col justify-between">
+      <div id="drawer-content" class="space-y-6">
+        <!-- Populated via JS -->
+      </div>
+      <div class="pt-6 border-t border-borderLight dark:border-borderDark flex justify-end">
+        <button id="close-drawer-btn" type="button" class="px-5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs font-mono font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+          Close Case Study [ESC]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE MODAL (⌘K / Ctrl+K) -->
+  <div id="cmd-palette" class="fixed inset-0 z-50 hidden items-start justify-center pt-24 px-4 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-2xl bg-white dark:bg-[#111318] border border-borderLight dark:border-borderDark shadow-2xl overflow-hidden">
+      <div class="px-4 py-3 border-b border-borderLight dark:border-borderDark flex items-center justify-between">
+        <span class="font-mono text-xs text-zinc-500">Quick Navigation & Actions</span>
+        <button id="close-cmd-btn" type="button" class="text-xs font-mono text-zinc-400 hover:text-zinc-900 dark:hover:text-white">ESC</button>
+      </div>
+      <div id="cmd-list" class="p-2 space-y-1 font-mono text-xs">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- =====================================================================
+       PORTFOLIO CONFIGURATION & INTERACTIVE LOGIC
+  ====================================================================== -->
+  <script>
+    const PORTFOLIO_CONFIG = {
+      name: 'Emmanuel "Wizzy" Danlami',
+      nickname: 'Wizzy',
+      email: 'emmanueldanlami7b@gmail.com',
+      phone: '+2348169335893',
+      location: 'Kaduna, Nigeria',
+
+      // =====================================================================
+      // 📸 ADD YOUR PHOTO HERE (Option 2):
+      // Paste your image URL or relative file path (e.g., 'images/wizzy.jpg')
+      // =====================================================================
+      profileImage: 'your-photo.jpg',
+
+      socials: [
+        { name: 'GitHub', icon: 'fa-brands fa-github', url: 'https://github.com/wizzy-devcode' },
+        { name: 'LinkedIn', icon: 'fa-brands fa-linkedin-in', url: 'https://www.linkedin.com/in/emmanuel-danlami-60b970377' },
+        { name: 'Instagram', icon: 'fa-brands fa-instagram', url: 'https://www.instagram.com/wizbrown_gram?bqrl=dHRncnlkMHExc3Zk&utm_source=qr' },
+        { name: 'WhatsApp', icon: 'fa-brands fa-whatsapp', url: 'https://wa.me/2348169335893' }
+      ],
+
+      projects: [
+        {
+          id: 'africhitect-bim',
+          title: 'Africhitect Studio & BIM Portal',
+          category: 'Full Stack',
+          summary: 'Interactive architectural visualization portal where property developers inspect Revit/Enscape renders, track site milestones, and book consultations.',
+          tech: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js'],
+          metric: '60fps Viewport • Low-Bandwidth Ready',
+          github: 'https://github.com',
+          live: '#work',
+          caseStudy: {
+            problem: 'Property clients struggled to review large Revit drawings and track site progress across scattered WhatsApp threads.',
+            architecture: 'Engineered a responsive single-page portal with progressive asset loading, interactive BIM layer previews, and milestone progress tracking.',
+            outcome: 'Cut client review turnaround times by 40% while delivering smooth performance on 3G/4G mobile connections.'
+          }
+        },
+        {
+          id: 'teamflow-saas',
+          title: 'TeamFlow Multi-Tenant SaaS',
+          category: 'Full Stack',
+          summary: 'Collaborative workspace featuring real-time document sync, role-based access control, and strict row-level tenant isolation.',
+          tech: ['Next.js', 'Node.js', 'PostgreSQL', 'Redis'],
+          metric: '< 45ms API Latency • 50k+ Users',
+          github: 'https://github.com',
+          live: '#work',
+          caseStudy: {
+            problem: 'Growing engineering teams needed real-time state synchronization without data leakage across client organizations.',
+            architecture: 'Built on PostgreSQL with row-level security policies, Redis pub/sub event streams, and optimistic React UI mutations.',
+            outcome: 'Maintained sub-45ms P95 API response times with zero cross-tenant data incidents.'
+          }
+        },
+        {
+          id: 'swiftcart-storefront',
+          title: 'SwiftCart Headless Commerce',
+          category: 'Frontend',
+          summary: 'High-speed headless e-commerce storefront with instant faceted search, edge-cached product pages, and frictionless checkout.',
+          tech: ['React', 'TypeScript', 'GraphQL', 'Tailwind CSS'],
+          metric: '99/100 Lighthouse • 0.6s LCP',
+          github: 'https://github.com',
+          live: '#work',
+          caseStudy: {
+            problem: 'Mobile shoppers experienced slow page loads and layout shifts during peak flash-sale traffic.',
+            architecture: 'Implemented incremental static regeneration, responsive WebP image pipelines, and zero-CLS skeleton loading states.',
+            outcome: 'Lifted mobile checkout conversion by 34% and achieved a 0.6s Largest Contentful Paint.'
+          }
+        }
+      ],
+
+      stack: [
+        {
+          title: 'Frontend Engineering',
+          subtitle: 'Accessible, responsive UIs',
+          icon: 'fa-solid fa-layer-group',
+          items: ['React & Next.js', 'TypeScript', 'Tailwind CSS', 'HTML5 / Modern CSS', 'State Management']
+        },
+        {
+          title: 'Backend & APIs',
+          subtitle: 'Resilient server runtimes',
+          icon: 'fa-solid fa-server',
+          items: ['Node.js & Express', 'Python & FastAPI', 'REST & GraphQL', 'JWT & OAuth2 Auth', 'WebSockets']
+        },
+        {
+          title: 'Data & Cloud',
+          subtitle: 'Storage & CI/CD pipelines',
+          icon: 'fa-solid fa-database',
+          items: ['PostgreSQL', 'MongoDB & Redis', 'Docker', 'AWS & Vercel', 'GitHub Actions']
+        },
+        {
+          title: 'Design & BIM',
+          subtitle: 'Spatial & visual precision',
+          icon: 'fa-solid fa-compass-drafting',
+          items: ['UI/UX Systems', 'Revit & AutoCAD', 'Enscape & Twinmotion', 'Core Web Vitals', 'System Architecture']
+        }
+      ],
+
+      experience: [
+        {
+          period: '2024 — Present',
+          role: 'Lead Full Stack Developer',
+          company: 'Wizzy Studio & Consulting',
+          summary: 'Architecting custom web platforms, client portals, and cloud APIs for startups and architectural firms in Nigeria and abroad.'
+        },
+        {
+          period: '2022 — 2024',
+          role: 'Full Stack Software Engineer',
+          company: 'Nexus Digital Labs',
+          summary: 'Built scalable Node.js & Python microservices, modernized legacy frontends into TypeScript/React, and tuned PostgreSQL queries.'
+        },
+        {
+          period: '2020 — 2022',
+          role: 'Web Developer & CAD Technologist',
+          company: 'Independent Practice',
+          summary: 'Combined technical CAD/BIM modeling (Revit, AutoCAD) with responsive full-stack web delivery for regional businesses.'
+        }
+      ]
+    };
+
+    // =====================================================================
+    // INITIALIZATION & INTERACTIVITY
+    // =====================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initClock();
+      hydrateProfile();
+      renderProjects('all');
+      renderStack();
+      renderExperience();
+      setupFilters();
+      setupDrawer();
+      setupCommandPalette();
+      setupContactActions();
+    });
+
+    function initTheme() {
+      const toggle = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+      const syncIcon = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        icon.className = isDark ? 'fa-solid fa-sun text-xs text-amber-400' : 'fa-solid fa-moon text-xs text-zinc-700';
+      };
+      syncIcon();
+      toggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        syncIcon();
+      });
+    }
+
+    function initClock() {
+      const clockEl = document.getElementById('wat-clock');
+      const update = () => {
+        const timeStr = new Date().toLocaleTimeString('en-GB', {
+          timeZone: 'Africa/Lagos',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        if (clockEl) clockEl.textContent = `${timeStr} WAT`;
+      };
+      update();
+      setInterval(update, 30000);
+    }
+
+    function hydrateProfile() {
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      // Portrait Image & Instant Upload Preview
+      const imgEl = document.getElementById('profile-img');
+      const swapBtn = document.getElementById('swap-photo-btn');
+      const fileInput = document.getElementById('photo-file-input');
+
+      if (imgEl && PORTFOLIO_CONFIG.profileImage) {
+        imgEl.src = PORTFOLIO_CONFIG.profileImage;
+      }
+
+      if (swapBtn && fileInput && imgEl) {
+        swapBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            imgEl.src = ev.target.result;
+            showToast('Portrait photo updated!');
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Hero Social Bento Buttons
+      const heroSocials = document.getElementById('hero-socials');
+      if (heroSocials) {
+        heroSocials.innerHTML = PORTFOLIO_CONFIG.socials.map(s => `
+          <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-zinc-100 dark:bg-bgDark hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-borderLight dark:border-borderDark text-xs font-mono flex items-center gap-2 transition-colors">
+            <i class="${s.icon} text-sky-500"></i>
+            <span class="truncate">${s.name}</span>
+          </a>
+        `).join('');
+      }
+
+      // Footer Social Icons
+      const footerSocials = document.getElementById('footer-socials');
+      if (footerSocials) {
+        footerSocials.innerHTML = PORTFOLIO_CONFIG.socials.map(s => `
+          <a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.name}" class="hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <i class="${s.icon}"></i>
+          </a>
+        `).join('');
+      }
+    }
+
+    function renderProjects(filter) {
+      const grid = document.getElementById('projects-grid');
+      const items = filter === 'all'
+        ? PORTFOLIO_CONFIG.projects
+        : PORTFOLIO_CONFIG.projects.filter(p => p.category === filter);
+
+      grid.innerHTML = items.map(p => `
+        <article class="bento-card p-6 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-[11px] font-medium">
+                ${p.category}
+              </span>
+              <div class="flex items-center gap-3 text-zinc-400">
+                <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-900 dark:hover:text-white transition-colors" title="Source Code">
+                  <i class="fa-brands fa-github"></i>
+                </a>
+                <a href="${p.live}" class="hover:text-sky-500 transition-colors" title="Live Project">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-lg font-bold tracking-tight">${p.title}</h3>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">${p.summary}</p>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5">
+              ${p.tech.map(t => `
+                <span class="px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
+                  ${t}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-borderLight dark:border-borderDark flex items-center justify-between gap-2">
+            <span class="font-mono text-[11px] text-zinc-500 truncate">${p.metric}</span>
+            <button type="button" data-project-id="${p.id}" class="open-drawer-btn shrink-0 font-mono text-xs text-sky-600 dark:text-sky-400 hover:underline inline-flex items-center gap-1.5 font-semibold">
+              <span>Case Study</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+        </article>
+      `).join('');
+
+      document.querySelectorAll('.open-drawer-btn').forEach(btn => {
+        btn.addEventListener('click', () => openDrawer(btn.dataset.projectId));
+      });
+    }
+
+    function renderStack() {
+      const grid = document.getElementById('stack-grid');
+      grid.innerHTML = PORTFOLIO_CONFIG.stack.map(group => `
+        <div class="bento-card p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-base">${group.title}</h3>
+              <p class="text-xs text-zinc-500 mt-0.5">${group.subtitle}</p>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center text-sm">
+              <i class="${group.icon}"></i>
+            </div>
+          </div>
+          <ul class="space-y-2 pt-3 border-t border-borderLight dark:border-borderDark font-mono text-xs text-zinc-700 dark:text-zinc-300">
+            ${group.items.map(item => `
+              <li class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                <span>${item}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    function renderExperience() {
+      const grid = document.getElementById('experience-grid');
+      grid.innerHTML = PORTFOLIO_CONFIG.experience.map(exp => `
+        <div class="bento-card p-6 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <span class="inline-block font-mono text-xs px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-bgDark text-zinc-600 dark:text-zinc-400">
+              ${exp.period}
+            </span>
+            <h3 class="text-lg font-bold pt-1">${exp.role}</h3>
+            <div class="font-mono text-xs text-sky-600 dark:text-sky-400">${exp.company}</div>
+          </div>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">${exp.summary}</p>
+        </div>
+      `).join('');
+    }
+
+    function setupFilters() {
+      document.querySelectorAll('.filter-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.filter-pill').forEach(p => {
+            p.className = 'filter-pill px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all';
+          });
+          pill.className = 'filter-pill active px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 transition-all';
+          renderProjects(pill.dataset.filter);
+        });
+      });
+    }
+
+    // Slide-Over Case Study Drawer
+    function setupDrawer() {
+      const drawer = document.getElementById('case-study-drawer');
+      const closeBtn = document.getElementById('close-drawer-btn');
+      const close = () => drawer.classList.remove('open');
+
+      closeBtn.addEventListener('click', close);
+      drawer.addEventListener('click', (e) => {
+        if (e.target === drawer) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          close();
+          document.getElementById('cmd-palette').classList.add('hidden');
+          document.getElementById('cmd-palette').classList.remove('flex');
+        }
+      });
+    }
+
+    function openDrawer(projectId) {
+      const project = PORTFOLIO_CONFIG.projects.find(p => p.id === projectId);
+      if (!project) return;
+
+      const content = document.getElementById('drawer-content');
+      content.innerHTML = `
+        <div class="space-y-2">
+          <span class="font-mono text-xs text-sky-600 dark:text-sky-400">${project.category} • Architecture Notes</span>
+          <h2 class="text-2xl font-bold tracking-tight">${project.title}</h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400">${project.summary}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark space-y-1.5">
+          <div class="font-mono text-[11px] uppercase tracking-wider text-zinc-500">The Challenge</div>
+          <p class="text-sm leading-relaxed">${project.caseStudy.problem}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark space-y-1.5">
+          <div class="font-mono text-[11px] uppercase tracking-wider text-sky-500">System Architecture</div>
+          <p class="text-sm leading-relaxed">${project.caseStudy.architecture}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-zinc-100 dark:bg-bgDark border border-borderLight dark:border-borderDark space-y-1.5">
+          <div class="font-mono text-[11px] uppercase tracking-wider text-emerald-500">Outcome & Impact</div>
+          <p class="text-sm leading-relaxed">${project.caseStudy.outcome}</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          ${project.tech.map(t => `<span class="px-3 py-1 rounded-lg bg-zinc-100 dark:bg-bgDark font-mono text-xs">${t}</span>`).join('')}
+        </div>
+      `;
+
+      document.getElementById('case-study-drawer').classList.add('open');
+    }
+
+    // Interactive Command Palette (⌘K / Ctrl+K)
+    function setupCommandPalette() {
+      const palette = document.getElementById('cmd-palette');
+      const triggerBtn = document.getElementById('cmd-trigger-btn');
+      const closeBtn = document.getElementById('close-cmd-btn');
+      const cmdList = document.getElementById('cmd-list');
+
+      const commands = [
+        { label: 'Copy Email (emmanueldanlami7b@gmail.com)', icon: 'fa-regular fa-copy', action: () => copyText(PORTFOLIO_CONFIG.email) },
+        { label: 'Chat on WhatsApp (+234 816 933 5893)', icon: 'fa-brands fa-whatsapp', action: () => window.open('https://wa.me/2348169335893', '_blank') },
+        { label: 'Open LinkedIn Profile', icon: 'fa-brands fa-linkedin-in', action: () => window.open('https://www.linkedin.com/in/emmanuel-danlami-60b970377', '_blank') },
+        { label: 'Open Instagram (@wizbrown_gram)', icon: 'fa-brands fa-instagram', action: () => window.open('https://www.instagram.com/wizbrown_gram?bqrl=dHRncnlkMHExc3Zk&utm_source=qr', '_blank') },
+        { label: 'Jump to Selected Work', icon: 'fa-solid fa-folder-open', action: () => { location.hash = '#work'; } },
+        { label: 'Jump to Contact Form', icon: 'fa-regular fa-paper-plane', action: () => { location.hash = '#contact'; } }
+      ];
+
+      cmdList.innerHTML = commands.map((c, idx) => `
+        <button type="button" data-cmd-idx="${idx}" class="cmd-item w-full px-3.5 py-2.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/80 flex items-center gap-3 text-left transition-colors">
+          <i class="${c.icon} text-sky-500 w-4 text-center"></i>
+          <span>${c.label}</span>
+        </button>
+      `).join('');
+
+      const openPalette = () => {
+        palette.classList.remove('hidden');
+        palette.classList.add('flex');
+      };
+      const closePalette = () => {
+        palette.classList.add('hidden');
+        palette.classList.remove('flex');
+      };
+
+      triggerBtn.addEventListener('click', openPalette);
+      closeBtn.addEventListener('click', closePalette);
+      palette.addEventListener('click', (e) => {
+        if (e.target === palette) closePalette();
+      });
+
+      document.querySelectorAll('.cmd-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          commands[btn.dataset.cmdIdx].action();
+          closePalette();
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          palette.classList.contains('hidden') ? openPalette() : closePalette();
+        }
+      });
+    }
+
+    // Contact Form & One-Click Copy Helpers
+    function setupContactActions() {
+      document.getElementById('hero-copy-email').addEventListener('click', () => copyText(PORTFOLIO_CONFIG.email));
+      document.getElementById('contact-copy-email').addEventListener('click', () => copyText(PORTFOLIO_CONFIG.email));
+
+      const form = document.getElementById('contact-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('sender-name').value.trim();
+        const email = document.getElementById('sender-email').value.trim();
+        const msg = document.getElementById('sender-message').value.trim();
+        if (!name || !email || !msg) return;
+
+        const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
+        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${msg}`);
+        window.location.href = `mailto:${PORTFOLIO_CONFIG.email}?subject=${subject}&body=${body}`;
+        showToast('Opening email client...');
+        form.reset();
+      });
+    }
+
+    function copyText(text) {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast(`Copied ${text}`);
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'px-4 py-2.5 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-mono text-xs shadow-xl transition-all';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 2600);
+    }
+  </script>
+</body>
+</html>
